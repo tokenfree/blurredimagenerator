@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Blurred Frame Image Generator</title>
+    <title>Advanced Blurred Frame Image Generator</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 10px;
@@ -35,7 +35,7 @@
 
         .content {
             display: flex;
-            min-height: 600px;
+            min-height: 700px;
         }
 
         .left-panel {
@@ -48,6 +48,8 @@
             flex: 1;
             padding: 20px;
             background: #fafafa;
+            overflow-y: auto;
+            max-height: 700px;
         }
 
         .section-title {
@@ -57,14 +59,24 @@
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .upload-section {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
         }
 
         .upload-area {
             border: 2px dashed #ccc;
             border-radius: 8px;
-            padding: 40px;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: #fafafa;
             transition: border-color 0.3s;
         }
@@ -77,52 +89,44 @@
         .upload-btn {
             background: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 10px;
+            font-size: 12px;
+            margin: 5px;
         }
 
         .upload-btn:hover {
             background: #45a049;
         }
 
-        #fileInput {
+        .bg-upload-btn {
+            background: #ff6b35;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 5px;
+        }
+
+        .bg-upload-btn:hover {
+            background: #e55a2b;
+        }
+
+        .file-input {
             display: none;
         }
 
         .url-input {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
             margin-top: 10px;
-            font-size: 14px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .control-btn {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .control-btn:hover {
-            background: #f0f0f0;
+            font-size: 12px;
         }
 
         .preview-container {
@@ -147,10 +151,78 @@
             max-width: 100%;
             max-height: 100%;
             border-radius: 4px;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .image-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .image-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .image-item:hover {
+            background: #f8f8f8;
+        }
+
+        .image-item.selected {
+            background: #e3f2fd;
+            border-left: 4px solid #667eea;
+        }
+
+        .image-thumbnail {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .image-info {
+            flex: 1;
+        }
+
+        .image-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .image-details {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 8px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #da190b;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
@@ -158,15 +230,16 @@
             margin-bottom: 5px;
             font-weight: 500;
             color: #333;
+            font-size: 12px;
         }
 
         .form-group select,
         .form-group input {
             width: 100%;
-            padding: 8px;
+            padding: 6px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .slider-container {
@@ -203,6 +276,43 @@
             border: none;
         }
 
+        .control-panel {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .control-btn {
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .download-btn {
             width: 100%;
             background: #667eea;
@@ -211,8 +321,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
+            font-size: 14px;
+            margin-top: 15px;
         }
 
         .download-btn:hover {
@@ -226,35 +336,56 @@
 
         .placeholder-text {
             color: #999;
-            font-size: 16px;
+            font-size: 12px;
+        }
+
+        .layer-indicator {
+            font-size: 10px;
+            color: #667eea;
+            margin-left: 5px;
+        }
+
+        .no-selection {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Online Blurred Frame Image Generator</h1>
-            <p>Enlarge images by adding blurred frame or background. Create squared images perfect for social media profiles.</p>
+            <h1>Advanced Blurred Frame Image Generator</h1>
+            <p>Create professional images with multiple layers, custom backgrounds, and individual image controls.</p>
         </div>
         
         <div class="content">
             <div class="left-panel">
-                <div class="section-title">Input Image</div>
-                
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" id="fileInput" accept="image/*">
-                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
-                    <div class="placeholder-text">or</div>
-                    <input type="text" class="url-input" id="urlInput" placeholder="Paste an image or image URL here...">
-                    <div class="placeholder-text" style="margin-top: 20px;">Drop an image here...</div>
+                <div class="upload-section">
+                    <div class="section-title">Background Image</div>
+                    <div class="upload-area" id="bgUploadArea">
+                        <input type="file" id="bgFileInput" class="file-input" accept="image/*">
+                        <button class="bg-upload-btn" onclick="document.getElementById('bgFileInput').click()">Choose Background</button>
+                        <div class="placeholder-text">or</div>
+                        <input type="text" class="url-input" id="bgUrlInput" placeholder="Background image URL...">
+                        <div class="placeholder-text" style="margin-top: 10px;">Drop background image here...</div>
+                    </div>
                 </div>
 
-                <div class="controls">
-                    <button class="control-btn" id="zoomIn" title="Zoom In">🔍+</button>
-                    <button class="control-btn" id="zoomOut" title="Zoom Out">🔍-</button>
-                    <button class="control-btn" id="fitToCanvas" title="Fit to Canvas">⚡</button>
-                    <button class="control-btn" id="resetView" title="Reset View">🔄</button>
-                    <button class="control-btn" id="addImage" title="Add Image">+</button>
+                <div class="upload-section">
+                    <div class="section-title">Foreground Images</div>
+                    <div class="upload-area" id="fgUploadArea">
+                        <input type="file" id="fgFileInput" class="file-input" accept="image/*" multiple>
+                        <button class="upload-btn" onclick="document.getElementById('fgFileInput').click()">Add Images</button>
+                        <div class="placeholder-text">or</div>
+                        <input type="text" class="url-input" id="fgUrlInput" placeholder="Image URL...">
+                        <div class="placeholder-text" style="margin-top: 10px;">Drop images here...</div>
+                    </div>
+                    
+                    <div class="image-list" id="imageList">
+                        <div class="no-selection">No images added yet</div>
+                    </div>
                 </div>
 
                 <div class="preview-container">
@@ -265,150 +396,566 @@
             </div>
 
             <div class="right-panel">
-                <div class="section-title">Size and Shape</div>
-                
-                <div class="form-group">
-                    <label>Output image shape</label>
-                    <select id="shapeSelect">
-                        <option value="exact">Exact size (px)</option>
-                        <option value="square">Square</option>
-                        <option value="landscape">Landscape</option>
-                        <option value="portrait">Portrait</option>
-                    </select>
-                </div>
+                <div class="control-panel">
+                    <div class="section-title">Canvas Settings</div>
+                    
+                    <div class="form-group">
+                        <label>Output image shape</label>
+                        <select id="shapeSelect">
+                            <option value="exact">Exact size (px)</option>
+                            <option value="square">Square</option>
+                            <option value="landscape">Landscape</option>
+                            <option value="portrait">Portrait</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label>Output image width (px)</label>
-                    <input type="number" id="widthInput" value="1152" min="100" max="4000">
-                </div>
+                    <div class="form-group">
+                        <label>Width (px)</label>
+                        <input type="number" id="widthInput" value="1152" min="100" max="4000">
+                    </div>
 
-                <div class="form-group">
-                    <label>Output image height (px)</label>
-                    <input type="number" id="heightInput" value="648" min="100" max="4000">
-                </div>
-
-                <div class="section-title" style="margin-top: 30px;">Background (Blur)</div>
-                
-                <div class="form-group">
-                    <label>Blur level</label>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="blurSlider" min="0" max="30" value="15">
-                        <span id="blurValue">15</span>
+                    <div class="form-group">
+                        <label>Height (px)</label>
+                        <input type="number" id="heightInput" value="648" min="100" max="4000">
                     </div>
                 </div>
 
-                <div class="section-title" style="margin-top: 30px;">Output Image</div>
-                
+                <div class="control-panel">
+                    <div class="section-title">Background Controls</div>
+                    
+                    <div class="control-buttons">
+                        <button class="control-btn" id="bgZoomIn" title="Background Zoom In">🔍+ BG</button>
+                        <button class="control-btn" id="bgZoomOut" title="Background Zoom Out">🔍- BG</button>
+                        <button class="control-btn" id="bgFitCanvas" title="Fit Background">⚡ BG</button>
+                        <button class="control-btn" id="bgResetZoom" title="Reset Background">🔄 BG</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Background scale</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="bgScaleSlider" min="10" max="300" value="100">
+                            <span id="bgScaleValue">100</span>%
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Background blur level</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="bgBlurSlider" min="0" max="30" value="15">
+                            <span id="bgBlurValue">15</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Background opacity</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="bgOpacitySlider" min="0" max="100" value="100">
+                            <span id="bgOpacityValue">100</span>%
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Background position X</label>
+                        <input type="number" id="bgPosXInput" value="0" step="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Background position Y</label>
+                        <input type="number" id="bgPosYInput" value="0" step="1">
+                    </div>
+                </div>
+
+                <div class="control-panel" id="imageControls">
+                    <div class="section-title">Selected Image Controls</div>
+                    <div id="selectedImageInfo" class="no-selection">Select an image to edit its properties</div>
+                    
+                    <div id="imageControlsContent" style="display: none;">
+                        <div class="control-buttons">
+                            <button class="control-btn" id="zoomIn" title="Zoom In">🔍+</button>
+                            <button class="control-btn" id="zoomOut" title="Zoom Out">🔍-</button>
+                            <button class="control-btn" id="resetZoom" title="Reset Zoom">⚡</button>
+                            <button class="control-btn" id="centerImage" title="Center">📍</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Image scale</label>
+                            <div class="slider-container">
+                                <input type="range" class="slider" id="scaleSlider" min="10" max="300" value="100">
+                                <span id="scaleValue">100</span>%
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Opacity</label>
+                            <div class="slider-container">
+                                <input type="range" class="slider" id="opacitySlider" min="0" max="100" value="100">
+                                <span id="opacityValue">100</span>%
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rotation (degrees)</label>
+                            <div class="slider-container">
+                                <input type="range" class="slider" id="rotationSlider" min="-180" max="180" value="0">
+                                <span id="rotationValue">0</span>°
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Position X</label>
+                            <input type="number" id="posXInput" value="0" step="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Position Y</label>
+                            <input type="number" id="posYInput" value="0" step="1">
+                        </div>
+                    </div>
+                </div>
+
                 <button class="download-btn" id="downloadBtn" disabled>Download Image</button>
             </div>
         </div>
     </div>
 
     <script>
-        class BlurredFrameGenerator {
+        class AdvancedBlurredFrameGenerator {
             constructor() {
                 this.canvas = document.getElementById('previewCanvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.originalImage = null;
-                this.scale = 1;
-                this.offsetX = 0;
-                this.offsetY = 0;
+                this.backgroundImage = null;
+                this.backgroundScale = 1;
+                this.backgroundOffsetX = 0;
+                this.backgroundOffsetY = 0;
+                this.foregroundImages = [];
+                this.selectedImageIndex = -1;
                 this.isDragging = false;
+                this.isDraggingBackground = false;
+                this.lastMouseX = 0;
+                this.lastMouseY = 0;
+                this.imageIdCounter = 0;
                 
                 this.initializeEventListeners();
                 this.updateCanvas();
             }
 
             initializeEventListeners() {
-                // File input
-                document.getElementById('fileInput').addEventListener('change', (e) => {
+                // Background image upload
+                document.getElementById('bgFileInput').addEventListener('change', (e) => {
                     if (e.target.files[0]) {
-                        this.loadImageFromFile(e.target.files[0]);
+                        this.loadBackgroundFromFile(e.target.files[0]);
                     }
                 });
 
-                // URL input
-                document.getElementById('urlInput').addEventListener('paste', (e) => {
-                    setTimeout(() => {
+                document.getElementById('bgUrlInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
                         const url = e.target.value;
                         if (url) {
-                            this.loadImageFromUrl(url);
+                            this.loadBackgroundFromUrl(url);
                         }
-                    }, 100);
-                });
-
-                // Drag and drop
-                const uploadArea = document.getElementById('uploadArea');
-                uploadArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadArea.classList.add('dragover');
-                });
-
-                uploadArea.addEventListener('dragleave', () => {
-                    uploadArea.classList.remove('dragover');
-                });
-
-                uploadArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    uploadArea.classList.remove('dragover');
-                    if (e.dataTransfer.files[0]) {
-                        this.loadImageFromFile(e.dataTransfer.files[0]);
                     }
                 });
 
-                // Controls
-                document.getElementById('zoomIn').addEventListener('click', () => this.zoom(1.2));
-                document.getElementById('zoomOut').addEventListener('click', () => this.zoom(0.8));
-                document.getElementById('fitToCanvas').addEventListener('click', () => this.fitToCanvas());
-                document.getElementById('resetView').addEventListener('click', () => this.resetView());
+                // Foreground images upload
+                document.getElementById('fgFileInput').addEventListener('change', (e) => {
+                    Array.from(e.target.files).forEach(file => {
+                        this.loadForegroundFromFile(file);
+                    });
+                });
 
-                // Settings
+                document.getElementById('fgUrlInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const url = e.target.value;
+                        if (url) {
+                            this.loadForegroundFromUrl(url);
+                            e.target.value = '';
+                        }
+                    }
+                });
+
+                // Drag and drop for background
+                const bgUploadArea = document.getElementById('bgUploadArea');
+                this.setupDragAndDrop(bgUploadArea, (files) => {
+                    if (files[0]) this.loadBackgroundFromFile(files[0]);
+                });
+
+                // Drag and drop for foreground
+                const fgUploadArea = document.getElementById('fgUploadArea');
+                this.setupDragAndDrop(fgUploadArea, (files) => {
+                    Array.from(files).forEach(file => {
+                        this.loadForegroundFromFile(file);
+                    });
+                });
+
+                // Canvas settings
                 document.getElementById('widthInput').addEventListener('input', () => this.updateCanvas());
                 document.getElementById('heightInput').addEventListener('input', () => this.updateCanvas());
-                document.getElementById('blurSlider').addEventListener('input', (e) => {
-                    document.getElementById('blurValue').textContent = e.target.value;
-                    this.updateCanvas();
-                });
                 document.getElementById('shapeSelect').addEventListener('change', () => this.updateShapeSettings());
 
-                // Download
-                document.getElementById('downloadBtn').addEventListener('click', () => this.downloadImage());
+                // Background controls
+                document.getElementById('bgZoomIn').addEventListener('click', () => this.adjustBackgroundScale(1.2));
+                document.getElementById('bgZoomOut').addEventListener('click', () => this.adjustBackgroundScale(0.8));
+                document.getElementById('bgFitCanvas').addEventListener('click', () => this.fitBackgroundToCanvas());
+                document.getElementById('bgResetZoom').addEventListener('click', () => this.resetBackgroundScale());
+
+                document.getElementById('bgScaleSlider').addEventListener('input', (e) => {
+                    document.getElementById('bgScaleValue').textContent = e.target.value;
+                    this.backgroundScale = parseFloat(e.target.value) / 100;
+                    this.updateCanvas();
+                });
+
+                document.getElementById('bgBlurSlider').addEventListener('input', (e) => {
+                    document.getElementById('bgBlurValue').textContent = e.target.value;
+                    this.updateCanvas();
+                });
+
+                document.getElementById('bgOpacitySlider').addEventListener('input', (e) => {
+                    document.getElementById('bgOpacityValue').textContent = e.target.value;
+                    this.updateCanvas();
+                });
+
+                document.getElementById('bgPosXInput').addEventListener('input', (e) => {
+                    this.backgroundOffsetX = parseFloat(e.target.value) || 0;
+                    this.updateCanvas();
+                });
+
+                document.getElementById('bgPosYInput').addEventListener('input', (e) => {
+                    this.backgroundOffsetY = parseFloat(e.target.value) || 0;
+                    this.updateCanvas();
+                });
+
+                // Image controls
+                document.getElementById('zoomIn').addEventListener('click', () => this.adjustSelectedImageScale(1.2));
+                document.getElementById('zoomOut').addEventListener('click', () => this.adjustSelectedImageScale(0.8));
+                document.getElementById('resetZoom').addEventListener('click', () => this.resetSelectedImageScale());
+                document.getElementById('centerImage').addEventListener('click', () => this.centerSelectedImage());
+
+                // Image property sliders
+                document.getElementById('scaleSlider').addEventListener('input', (e) => {
+                    document.getElementById('scaleValue').textContent = e.target.value;
+                    if (this.selectedImageIndex >= 0) {
+                        this.foregroundImages[this.selectedImageIndex].scale = parseFloat(e.target.value) / 100;
+                        this.updateCanvas();
+                    }
+                });
+
+                document.getElementById('opacitySlider').addEventListener('input', (e) => {
+                    document.getElementById('opacityValue').textContent = e.target.value;
+                    if (this.selectedImageIndex >= 0) {
+                        this.foregroundImages[this.selectedImageIndex].opacity = parseFloat(e.target.value) / 100;
+                        this.updateCanvas();
+                    }
+                });
+
+                document.getElementById('rotationSlider').addEventListener('input', (e) => {
+                    document.getElementById('rotationValue').textContent = e.target.value;
+                    if (this.selectedImageIndex >= 0) {
+                        this.foregroundImages[this.selectedImageIndex].rotation = parseFloat(e.target.value);
+                        this.updateCanvas();
+                    }
+                });
+
+                document.getElementById('posXInput').addEventListener('input', (e) => {
+                    if (this.selectedImageIndex >= 0) {
+                        this.foregroundImages[this.selectedImageIndex].offsetX = parseFloat(e.target.value) || 0;
+                        this.updateCanvas();
+                    }
+                });
+
+                document.getElementById('posYInput').addEventListener('input', (e) => {
+                    if (this.selectedImageIndex >= 0) {
+                        this.foregroundImages[this.selectedImageIndex].offsetY = parseFloat(e.target.value) || 0;
+                        this.updateCanvas();
+                    }
+                });
 
                 // Canvas interactions
                 this.canvas.addEventListener('mousedown', (e) => this.startDrag(e));
                 this.canvas.addEventListener('mousemove', (e) => this.drag(e));
                 this.canvas.addEventListener('mouseup', () => this.endDrag());
                 this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
+
+                // Download
+                document.getElementById('downloadBtn').addEventListener('click', () => this.downloadImage());
             }
 
-            loadImageFromFile(file) {
+            setupDragAndDrop(element, callback) {
+                element.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    element.classList.add('dragover');
+                });
+
+                element.addEventListener('dragleave', () => {
+                    element.classList.remove('dragover');
+                });
+
+                element.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    element.classList.remove('dragover');
+                    callback(e.dataTransfer.files);
+                });
+            }
+
+            loadBackgroundFromFile(file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        this.originalImage = img;
-                        this.resetView();
+                        this.backgroundImage = img;
+                        this.resetBackgroundScale();
                         this.updateCanvas();
-                        document.getElementById('downloadBtn').disabled = false;
+                        this.updateDownloadButton();
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
 
-            loadImageFromUrl(url) {
+            loadBackgroundFromUrl(url) {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.onload = () => {
-                    this.originalImage = img;
-                    this.resetView();
+                    this.backgroundImage = img;
+                    this.resetBackgroundScale();
                     this.updateCanvas();
-                    document.getElementById('downloadBtn').disabled = false;
+                    this.updateDownloadButton();
                 };
                 img.onerror = () => {
-                    alert('Failed to load image from URL. Please check the URL or try a different image.');
+                    alert('Failed to load background image from URL.');
                 };
                 img.src = url;
+            }
+
+            loadForegroundFromFile(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.addForegroundImage(img, file.name);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            loadForegroundFromUrl(url) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    this.addForegroundImage(img, `Image ${this.imageIdCounter + 1}`);
+                };
+                img.onerror = () => {
+                    alert('Failed to load image from URL.');
+                };
+                img.src = url;
+            }
+
+            addForegroundImage(img, name) {
+                const imageData = {
+                    id: this.imageIdCounter++,
+                    image: img,
+                    name: name,
+                    scale: 1,
+                    offsetX: 0,
+                    offsetY: 0,
+                    opacity: 1,
+                    rotation: 0
+                };
+                
+                this.foregroundImages.push(imageData);
+                this.positionImagesForLayout();
+                this.updateImageList();
+                this.updateCanvas();
+                this.updateDownloadButton();
+            }
+
+            positionImagesForLayout() {
+                const width = parseInt(document.getElementById('widthInput').value) || 800;
+                const numImages = this.foregroundImages.length;
+                
+                if (numImages <= 1) {
+                    // Single image stays centered
+                    if (numImages === 1) {
+                        this.foregroundImages[0].offsetX = 0;
+                    }
+                    return;
+                }
+
+                // Calculate spacing for side-by-side layout
+                const totalSpacing = width * 0.6; // Use 60% of canvas width for spacing
+                const spacingBetween = totalSpacing / (numImages - 1);
+                const startX = -totalSpacing / 2;
+
+                this.foregroundImages.forEach((imgData, index) => {
+                    imgData.offsetX = startX + (index * spacingBetween);
+                    // Keep Y position as is, or center vertically
+                    if (imgData.offsetY === 0) {
+                        imgData.offsetY = 0; // Keep centered vertically
+                    }
+                });
+            }
+
+            updateImageList() {
+                const imageList = document.getElementById('imageList');
+                
+                if (this.foregroundImages.length === 0) {
+                    imageList.innerHTML = '<div class="no-selection">No images added yet</div>';
+                    return;
+                }
+
+                imageList.innerHTML = '';
+                this.foregroundImages.forEach((imgData, index) => {
+                    const item = document.createElement('div');
+                    item.className = `image-item ${index === this.selectedImageIndex ? 'selected' : ''}`;
+                    item.innerHTML = `
+                        <canvas class="image-thumbnail" width="40" height="40"></canvas>
+                        <div class="image-info">
+                            <div class="image-name">${imgData.name}</div>
+                            <div class="image-details">
+                                Scale: ${Math.round(imgData.scale * 100)}% | 
+                                Opacity: ${Math.round(imgData.opacity * 100)}%
+                            </div>
+                        </div>
+                        <button class="delete-btn" onclick="generator.deleteForegroundImage(${index})">×</button>
+                    `;
+                    
+                    // Draw thumbnail
+                    const thumbCanvas = item.querySelector('.image-thumbnail');
+                    const thumbCtx = thumbCanvas.getContext('2d');
+                    const thumbSize = Math.min(imgData.image.width, imgData.image.height);
+                    const thumbScale = 40 / thumbSize;
+                    const thumbWidth = imgData.image.width * thumbScale;
+                    const thumbHeight = imgData.image.height * thumbScale;
+                    const thumbX = (40 - thumbWidth) / 2;
+                    const thumbY = (40 - thumbHeight) / 2;
+                    thumbCtx.drawImage(imgData.image, thumbX, thumbY, thumbWidth, thumbHeight);
+                    
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('delete-btn')) {
+                            this.selectImage(index);
+                        }
+                    });
+                    
+                    imageList.appendChild(item);
+                });
+            }
+
+            selectImage(index) {
+                this.selectedImageIndex = index;
+                this.updateImageList();
+                this.updateImageControls();
+            }
+
+            deleteForegroundImage(index) {
+                this.foregroundImages.splice(index, 1);
+                if (this.selectedImageIndex >= this.foregroundImages.length) {
+                    this.selectedImageIndex = this.foregroundImages.length - 1;
+                }
+                if (this.selectedImageIndex < 0) {
+                    this.selectedImageIndex = -1;
+                }
+                
+                // Reposition remaining images
+                this.positionImagesForLayout();
+                
+                this.updateImageList();
+                this.updateImageControls();
+                this.updateCanvas();
+                this.updateDownloadButton();
+            }
+
+            updateImageControls() {
+                const controlsContent = document.getElementById('imageControlsContent');
+                const selectedInfo = document.getElementById('selectedImageInfo');
+                
+                if (this.selectedImageIndex >= 0 && this.selectedImageIndex < this.foregroundImages.length) {
+                    const imgData = this.foregroundImages[this.selectedImageIndex];
+                    controlsContent.style.display = 'block';
+                    selectedInfo.style.display = 'none';
+                    
+                    // Update slider values
+                    document.getElementById('scaleSlider').value = Math.round(imgData.scale * 100);
+                    document.getElementById('scaleValue').textContent = Math.round(imgData.scale * 100);
+                    document.getElementById('opacitySlider').value = Math.round(imgData.opacity * 100);
+                    document.getElementById('opacityValue').textContent = Math.round(imgData.opacity * 100);
+                    document.getElementById('rotationSlider').value = imgData.rotation;
+                    document.getElementById('rotationValue').textContent = imgData.rotation;
+                    document.getElementById('posXInput').value = Math.round(imgData.offsetX);
+                    document.getElementById('posYInput').value = Math.round(imgData.offsetY);
+                } else {
+                    controlsContent.style.display = 'none';
+                    selectedInfo.style.display = 'block';
+                }
+            }
+
+            adjustSelectedImageScale(factor) {
+                if (this.selectedImageIndex >= 0) {
+                    const imgData = this.foregroundImages[this.selectedImageIndex];
+                    imgData.scale = Math.max(0.1, Math.min(5, imgData.scale * factor));
+                    this.updateImageControls();
+                    this.updateImageList();
+                    this.updateCanvas();
+                }
+            }
+
+            adjustBackgroundScale(factor) {
+                this.backgroundScale = Math.max(0.1, Math.min(5, this.backgroundScale * factor));
+                this.updateBackgroundControls();
+                this.updateCanvas();
+            }
+
+            resetBackgroundScale() {
+                this.backgroundScale = 1;
+                this.backgroundOffsetX = 0;
+                this.backgroundOffsetY = 0;
+                this.updateBackgroundControls();
+                this.updateCanvas();
+            }
+
+            fitBackgroundToCanvas() {
+                if (!this.backgroundImage) return;
+                
+                const width = parseInt(document.getElementById('widthInput').value) || 800;
+                const height = parseInt(document.getElementById('heightInput').value) || 600;
+                const canvasAspect = width / height;
+                const imageAspect = this.backgroundImage.width / this.backgroundImage.height;
+                
+                if (imageAspect > canvasAspect) {
+                    this.backgroundScale = height / this.backgroundImage.height;
+                } else {
+                    this.backgroundScale = width / this.backgroundImage.width;
+                }
+                
+                this.backgroundOffsetX = 0;
+                this.backgroundOffsetY = 0;
+                this.updateBackgroundControls();
+                this.updateCanvas();
+            }
+
+            updateBackgroundControls() {
+                document.getElementById('bgScaleSlider').value = Math.round(this.backgroundScale * 100);
+                document.getElementById('bgScaleValue').textContent = Math.round(this.backgroundScale * 100);
+                document.getElementById('bgPosXInput').value = Math.round(this.backgroundOffsetX);
+                document.getElementById('bgPosYInput').value = Math.round(this.backgroundOffsetY);
+            }
+
+            resetSelectedImageScale() {
+                if (this.selectedImageIndex >= 0) {
+                    this.foregroundImages[this.selectedImageIndex].scale = 1;
+                    this.updateImageControls();
+                    this.updateImageList();
+                    this.updateCanvas();
+                }
+            }
+
+            centerSelectedImage() {
+                if (this.selectedImageIndex >= 0) {
+                    const imgData = this.foregroundImages[this.selectedImageIndex];
+                    imgData.offsetX = 0;
+                    imgData.offsetY = 0;
+                    this.updateImageControls();
+                    this.updateCanvas();
+                }
             }
 
             updateShapeSettings() {
@@ -418,106 +965,130 @@
                 
                 if (shape === 'square') {
                     heightInput.value = widthInput.value;
+                } else if (shape === 'landscape') {
+                    if (parseInt(heightInput.value) > parseInt(widthInput.value)) {
+                        const temp = widthInput.value;
+                        widthInput.value = heightInput.value;
+                        heightInput.value = temp;
+                    }
+                } else if (shape === 'portrait') {
+                    if (parseInt(widthInput.value) > parseInt(heightInput.value)) {
+                        const temp = widthInput.value;
+                        widthInput.value = heightInput.value;
+                        heightInput.value = temp;
+                    }
                 }
+                
+                // Reposition images when canvas size changes
+                this.positionImagesForLayout();
                 this.updateCanvas();
             }
 
             updateCanvas() {
                 const width = parseInt(document.getElementById('widthInput').value) || 800;
                 const height = parseInt(document.getElementById('heightInput').value) || 600;
-                const blur = parseInt(document.getElementById('blurSlider').value) || 15;
+                const bgBlur = parseInt(document.getElementById('bgBlurSlider').value) || 15;
+                const bgOpacity = parseInt(document.getElementById('bgOpacitySlider').value) || 100;
 
-                // Set canvas size for preview (scaled down for performance)
+                // Set canvas size for preview
                 const previewScale = Math.min(400 / width, 300 / height);
                 this.canvas.width = width * previewScale;
                 this.canvas.height = height * previewScale;
 
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-                if (!this.originalImage) {
-                    this.ctx.fillStyle = '#f0f0f0';
+                // Draw background
+                this.ctx.save();
+                this.ctx.globalAlpha = bgOpacity / 100;
+                this.ctx.filter = `blur(${bgBlur * previewScale}px)`;
+                
+                if (this.backgroundImage) {
+                    const scaledWidth = this.backgroundImage.width * this.backgroundScale * previewScale;
+                    const scaledHeight = this.backgroundImage.height * this.backgroundScale * previewScale;
+                    const bgX = (this.canvas.width - scaledWidth) / 2 + this.backgroundOffsetX * previewScale;
+                    const bgY = (this.canvas.height - scaledHeight) / 2 + this.backgroundOffsetY * previewScale;
+                    this.ctx.drawImage(this.backgroundImage, bgX, bgY, scaledWidth, scaledHeight);
+                } else {
+                    // Default gradient background
+                    const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+                    gradient.addColorStop(0, '#667eea');
+                    gradient.addColorStop(1, '#764ba2');
+                    this.ctx.fillStyle = gradient;
                     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+                this.ctx.restore();
+
+                // Draw foreground images
+                this.foregroundImages.forEach((imgData, index) => {
+                    this.ctx.save();
+                    
+                    const imgWidth = imgData.image.width * imgData.scale * previewScale;
+                    const imgHeight = imgData.image.height * imgData.scale * previewScale;
+                    const imgX = (this.canvas.width - imgWidth) / 2 + imgData.offsetX * previewScale;
+                    const imgY = (this.canvas.height - imgHeight) / 2 + imgData.offsetY * previewScale;
+                    
+                    this.ctx.globalAlpha = imgData.opacity;
+                    this.ctx.translate(imgX + imgWidth / 2, imgY + imgHeight / 2);
+                    this.ctx.rotate((imgData.rotation * Math.PI) / 180);
+                    
+                    this.ctx.drawImage(imgData.image, -imgWidth / 2, -imgHeight / 2, imgWidth, imgHeight);
+                    
+                    // Draw selection border
+                    if (index === this.selectedImageIndex) {
+                        this.ctx.strokeStyle = '#667eea';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.setLineDash([5, 5]);
+                        this.ctx.strokeRect(-imgWidth / 2 - 2, -imgHeight / 2 - 2, imgWidth + 4, imgHeight + 4);
+                        this.ctx.setLineDash([]);
+                    }
+                    
+                    this.ctx.restore();
+                });
+
+                // Show placeholder if no content
+                if (!this.backgroundImage && this.foregroundImages.length === 0) {
                     this.ctx.fillStyle = '#999';
                     this.ctx.font = '16px Arial';
                     this.ctx.textAlign = 'center';
-                    this.ctx.fillText('Upload an image to preview', this.canvas.width / 2, this.canvas.height / 2);
-                    return;
-                }
-
-                // Draw blurred background
-                this.ctx.save();
-                this.ctx.filter = `blur(${blur * previewScale}px)`;
-                
-                // Scale and center the background image to fill the canvas
-                const bgScale = Math.max(this.canvas.width / this.originalImage.width, this.canvas.height / this.originalImage.height);
-                const bgWidth = this.originalImage.width * bgScale;
-                const bgHeight = this.originalImage.height * bgScale;
-                const bgX = (this.canvas.width - bgWidth) / 2;
-                const bgY = (this.canvas.height - bgHeight) / 2;
-                
-                this.ctx.drawImage(this.originalImage, bgX, bgY, bgWidth, bgHeight);
-                this.ctx.restore();
-
-                // Draw main image
-                const imgWidth = this.originalImage.width * this.scale * previewScale;
-                const imgHeight = this.originalImage.height * this.scale * previewScale;
-                const imgX = (this.canvas.width - imgWidth) / 2 + this.offsetX * previewScale;
-                const imgY = (this.canvas.height - imgHeight) / 2 + this.offsetY * previewScale;
-
-                this.ctx.drawImage(this.originalImage, imgX, imgY, imgWidth, imgHeight);
-            }
-
-            zoom(factor) {
-                this.scale *= factor;
-                this.scale = Math.max(0.1, Math.min(5, this.scale));
-                this.updateCanvas();
-            }
-
-            fitToCanvas() {
-                if (!this.originalImage) return;
-                
-                const canvasAspect = this.canvas.width / this.canvas.height;
-                const imageAspect = this.originalImage.width / this.originalImage.height;
-                
-                if (imageAspect > canvasAspect) {
-                    this.scale = this.canvas.width / this.originalImage.width * 0.8;
-                } else {
-                    this.scale = this.canvas.height / this.originalImage.height * 0.8;
-                }
-                
-                this.offsetX = 0;
-                this.offsetY = 0;
-                this.updateCanvas();
-            }
-
-            resetView() {
-                this.scale = 1;
-                this.offsetX = 0;
-                this.offsetY = 0;
-                if (this.originalImage) {
-                    this.fitToCanvas();
+                    this.ctx.fillText('Add background and foreground images', this.canvas.width / 2, this.canvas.height / 2);
                 }
             }
 
             startDrag(e) {
-                this.isDragging = true;
-                this.lastMouseX = e.offsetX;
-                this.lastMouseY = e.offsetY;
-                this.canvas.style.cursor = 'grabbing';
+                if (this.selectedImageIndex >= 0) {
+                    this.isDragging = true;
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.lastMouseX = e.clientX - rect.left;
+                    this.lastMouseY = e.clientY - rect.top;
+                    this.canvas.style.cursor = 'grabbing';
+                }
             }
 
             drag(e) {
-                if (!this.isDragging) return;
+                if (!this.isDragging || this.selectedImageIndex < 0) return;
                 
-                const deltaX = e.offsetX - this.lastMouseX;
-                const deltaY = e.offsetY - this.lastMouseY;
+                const rect = this.canvas.getBoundingClientRect();
+                const currentMouseX = e.clientX - rect.left;
+                const currentMouseY = e.clientY - rect.top;
                 
-                this.offsetX += deltaX;
-                this.offsetY += deltaY;
+                const deltaX = currentMouseX - this.lastMouseX;
+                const deltaY = currentMouseY - this.lastMouseY;
                 
-                this.lastMouseX = e.offsetX;
-                this.lastMouseY = e.offsetY;
+                // Convert preview scale to actual scale
+                const width = parseInt(document.getElementById('widthInput').value) || 800;
+                const height = parseInt(document.getElementById('heightInput').value) || 600;
+                const previewScale = Math.min(400 / width, 300 / height);
+                const actualDeltaX = deltaX / previewScale;
+                const actualDeltaY = deltaY / previewScale;
                 
+                const imgData = this.foregroundImages[this.selectedImageIndex];
+                imgData.offsetX += actualDeltaX;
+                imgData.offsetY += actualDeltaY;
+                
+                this.lastMouseX = currentMouseX;
+                this.lastMouseY = currentMouseY;
+                
+                this.updateImageControls();
                 this.updateCanvas();
             }
 
@@ -528,50 +1099,71 @@
 
             handleWheel(e) {
                 e.preventDefault();
-                const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
-                this.zoom(zoomFactor);
+                if (this.selectedImageIndex >= 0) {
+                    const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+                    this.adjustSelectedImageScale(zoomFactor);
+                }
+            }
+
+            updateDownloadButton() {
+                const hasContent = this.backgroundImage || this.foregroundImages.length > 0;
+                document.getElementById('downloadBtn').disabled = !hasContent;
             }
 
             downloadImage() {
-                if (!this.originalImage) return;
-
                 const width = parseInt(document.getElementById('widthInput').value) || 800;
                 const height = parseInt(document.getElementById('heightInput').value) || 600;
-                const blur = parseInt(document.getElementById('blurSlider').value) || 15;
+                const bgBlur = parseInt(document.getElementById('bgBlurSlider').value) || 15;
+                const bgOpacity = parseInt(document.getElementById('bgOpacitySlider').value) || 100;
 
-                // Create high-resolution canvas for export
                 const exportCanvas = document.createElement('canvas');
                 const exportCtx = exportCanvas.getContext('2d');
                 exportCanvas.width = width;
                 exportCanvas.height = height;
 
-                // Draw blurred background
+                // Draw background
                 exportCtx.save();
-                exportCtx.filter = `blur(${blur}px)`;
+                exportCtx.globalAlpha = bgOpacity / 100;
+                exportCtx.filter = `blur(${bgBlur}px)`;
                 
-                const bgScale = Math.max(width / this.originalImage.width, height / this.originalImage.height);
-                const bgWidth = this.originalImage.width * bgScale;
-                const bgHeight = this.originalImage.height * bgScale;
-                const bgX = (width - bgWidth) / 2;
-                const bgY = (height - bgHeight) / 2;
-                
-                exportCtx.drawImage(this.originalImage, bgX, bgY, bgWidth, bgHeight);
+                if (this.backgroundImage) {
+                    const scaledWidth = this.backgroundImage.width * this.backgroundScale;
+                    const scaledHeight = this.backgroundImage.height * this.backgroundScale;
+                    const bgX = (width - scaledWidth) / 2 + this.backgroundOffsetX;
+                    const bgY = (height - scaledHeight) / 2 + this.backgroundOffsetY;
+                    exportCtx.drawImage(this.backgroundImage, bgX, bgY, scaledWidth, scaledHeight);
+                } else {
+                    const gradient = exportCtx.createLinearGradient(0, 0, width, height);
+                    gradient.addColorStop(0, '#667eea');
+                    gradient.addColorStop(1, '#764ba2');
+                    exportCtx.fillStyle = gradient;
+                    exportCtx.fillRect(0, 0, width, height);
+                }
                 exportCtx.restore();
 
-                // Draw main image
-                const imgWidth = this.originalImage.width * this.scale;
-                const imgHeight = this.originalImage.height * this.scale;
-                const imgX = (width - imgWidth) / 2 + this.offsetX;
-                const imgY = (height - imgHeight) / 2 + this.offsetY;
-
-                exportCtx.drawImage(this.originalImage, imgX, imgY, imgWidth, imgHeight);
+                // Draw foreground images
+                this.foregroundImages.forEach((imgData) => {
+                    exportCtx.save();
+                    
+                    const imgWidth = imgData.image.width * imgData.scale;
+                    const imgHeight = imgData.image.height * imgData.scale;
+                    const imgX = (width - imgWidth) / 2 + imgData.offsetX;
+                    const imgY = (height - imgHeight) / 2 + imgData.offsetY;
+                    
+                    exportCtx.globalAlpha = imgData.opacity;
+                    exportCtx.translate(imgX + imgWidth / 2, imgY + imgHeight / 2);
+                    exportCtx.rotate((imgData.rotation * Math.PI) / 180);
+                    
+                    exportCtx.drawImage(imgData.image, -imgWidth / 2, -imgHeight / 2, imgWidth, imgHeight);
+                    exportCtx.restore();
+                });
 
                 // Download
                 exportCanvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'blurred-frame-image.png';
+                    a.download = 'advanced-blurred-frame-image.png';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -580,8 +1172,9 @@
             }
         }
 
-        // Initialize the application
-        new BlurredFrameGenerator();
+        // Make generator globally accessible for delete function
+        const generator = new AdvancedBlurredFrameGenerator();
     </script>
 </body>
 </html>
+                
