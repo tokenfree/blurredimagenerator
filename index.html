@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Blurred Frame Image Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .left-panel {
+            flex: 2;
+            padding: 20px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: #fafafa;
+            transition: border-color 0.3s;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .upload-btn:hover {
+            background: #45a049;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .preview-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .download-btn {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .placeholder-text {
+            color: #999;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Online Blurred Frame Image Generator</h1>
+            <p>Enlarge images by adding blurred frame or background. Create squared images perfect for social media profiles.</p>
+        </div>
+        
+        <div class="content">
+            <div class="left-panel">
+                <div class="section-title">Input Image</div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept="image/*">
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                    <div class="placeholder-text">or</div>
+                    <input type="text" class="url-input" id="urlInput" placeholder="Paste an image or image URL here...">
+                    <div class="placeholder-text" style="margin-top: 20px;">Drop an image here...</div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn" id="zoomIn" title="Zoom In">🔍+</button>
+                    <button class="control-btn" id="zoomOut" title="Zoom Out">🔍-</button>
+                    <button class="control-btn" id="fitToCanvas" title="Fit to Canvas">⚡</button>
+                    <button class="control-btn" id="resetView" title="Reset View">🔄</button>
+                    <button class="control-btn" id="addImage" title="Add Image">+</button>
+                </div>
+
+                <div class="preview-container">
+                    <div class="canvas-container">
+                        <canvas id="previewCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="section-title">Size and Shape</div>
+                
+                <div class="form-group">
+                    <label>Output image shape</label>
+                    <select id="shapeSelect">
+                        <option value="exact">Exact size (px)</option>
+                        <option value="square">Square</option>
+                        <option value="landscape">Landscape</option>
+                        <option value="portrait">Portrait</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Output image width (px)</label>
+                    <input type="number" id="widthInput" value="1152" min="100" max="4000">
+                </div>
+
+                <div class="form-group">
+                    <label>Output image height (px)</label>
+                    <input type="number" id="heightInput" value="648" min="100" max="4000">
+                </div>
+
+                <div class="section-title" style="margin-top: 30px;">Background (Blur)</div>
+                
+                <div class="form-group">
+                    <label>Blur level</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="blurSlider" min="0" max="30" value="15">
+                        <span id="blurValue">15</span>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 30px;">Output Image</div>
+                
+                <button class="download-btn" id="downloadBtn" disabled>Download Image</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class BlurredFrameGenerator {
+            constructor() {
+                this.canvas = document.getElementById('previewCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.originalImage = null;
+                this.scale = 1;
+                this.offsetX = 0;
+                this.offsetY = 0;
+                this.isDragging = false;
+                
+                this.initializeEventListeners();
+                this.updateCanvas();
+            }
+
+            initializeEventListeners() {
+                // File input
+                document.getElementById('fileInput').addEventListener('change', (e) => {
+                    if (e.target.files[0]) {
+                        this.loadImageFromFile(e.target.files[0]);
+                    }
+                });
+
+                // URL input
+                document.getElementById('urlInput').addEventListener('paste', (e) => {
+                    setTimeout(() => {
+                        const url = e.target.value;
+                        if (url) {
+                            this.loadImageFromUrl(url);
+                        }
+                    }, 100);
+                });
+
+                // Drag and drop
+                const uploadArea = document.getElementById('uploadArea');
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    if (e.dataTransfer.files[0]) {
+                        this.loadImageFromFile(e.dataTransfer.files[0]);
+                    }
+                });
+
+                // Controls
+                document.getElementById('zoomIn').addEventListener('click', () => this.zoom(1.2));
+                document.getElementById('zoomOut').addEventListener('click', () => this.zoom(0.8));
+                document.getElementById('fitToCanvas').addEventListener('click', () => this.fitToCanvas());
+                document.getElementById('resetView').addEventListener('click', () => this.resetView());
+
+                // Settings
+                document.getElementById('widthInput').addEventListener('input', () => this.updateCanvas());
+                document.getElementById('heightInput').addEventListener('input', () => this.updateCanvas());
+                document.getElementById('blurSlider').addEventListener('input', (e) => {
+                    document.getElementById('blurValue').textContent = e.target.value;
+                    this.updateCanvas();
+                });
+                document.getElementById('shapeSelect').addEventListener('change', () => this.updateShapeSettings());
+
+                // Download
+                document.getElementById('downloadBtn').addEventListener('click', () => this.downloadImage());
+
+                // Canvas interactions
+                this.canvas.addEventListener('mousedown', (e) => this.startDrag(e));
+                this.canvas.addEventListener('mousemove', (e) => this.drag(e));
+                this.canvas.addEventListener('mouseup', () => this.endDrag());
+                this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
+            }
+
+            loadImageFromFile(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.originalImage = img;
+                        this.resetView();
+                        this.updateCanvas();
+                        document.getElementById('downloadBtn').disabled = false;
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            loadImageFromUrl(url) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    this.originalImage = img;
+                    this.resetView();
+                    this.updateCanvas();
+                    document.getElementById('downloadBtn').disabled = false;
+                };
+                img.onerror = () => {
+                    alert('Failed to load image from URL. Please check the URL or try a different image.');
+                };
+                img.src = url;
+            }
+
+            updateShapeSettings() {
+                const shape = document.getElementById('shapeSelect').value;
+                const widthInput = document.getElementById('widthInput');
+                const heightInput = document.getElementById('heightInput');
+                
+                if (shape === 'square') {
+                    heightInput.value = widthInput.value;
+                }
+                this.updateCanvas();
+            }
+
+            updateCanvas() {
+                const width = parseInt(document.getElementById('widthInput').value) || 800;
+                const height = parseInt(document.getElementById('heightInput').value) || 600;
+                const blur = parseInt(document.getElementById('blurSlider').value) || 15;
+
+                // Set canvas size for preview (scaled down for performance)
+                const previewScale = Math.min(400 / width, 300 / height);
+                this.canvas.width = width * previewScale;
+                this.canvas.height = height * previewScale;
+
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                if (!this.originalImage) {
+                    this.ctx.fillStyle = '#f0f0f0';
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.ctx.fillStyle = '#999';
+                    this.ctx.font = '16px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText('Upload an image to preview', this.canvas.width / 2, this.canvas.height / 2);
+                    return;
+                }
+
+                // Draw blurred background
+                this.ctx.save();
+                this.ctx.filter = `blur(${blur * previewScale}px)`;
+                
+                // Scale and center the background image to fill the canvas
+                const bgScale = Math.max(this.canvas.width / this.originalImage.width, this.canvas.height / this.originalImage.height);
+                const bgWidth = this.originalImage.width * bgScale;
+                const bgHeight = this.originalImage.height * bgScale;
+                const bgX = (this.canvas.width - bgWidth) / 2;
+                const bgY = (this.canvas.height - bgHeight) / 2;
+                
+                this.ctx.drawImage(this.originalImage, bgX, bgY, bgWidth, bgHeight);
+                this.ctx.restore();
+
+                // Draw main image
+                const imgWidth = this.originalImage.width * this.scale * previewScale;
+                const imgHeight = this.originalImage.height * this.scale * previewScale;
+                const imgX = (this.canvas.width - imgWidth) / 2 + this.offsetX * previewScale;
+                const imgY = (this.canvas.height - imgHeight) / 2 + this.offsetY * previewScale;
+
+                this.ctx.drawImage(this.originalImage, imgX, imgY, imgWidth, imgHeight);
+            }
+
+            zoom(factor) {
+                this.scale *= factor;
+                this.scale = Math.max(0.1, Math.min(5, this.scale));
+                this.updateCanvas();
+            }
+
+            fitToCanvas() {
+                if (!this.originalImage) return;
+                
+                const canvasAspect = this.canvas.width / this.canvas.height;
+                const imageAspect = this.originalImage.width / this.originalImage.height;
+                
+                if (imageAspect > canvasAspect) {
+                    this.scale = this.canvas.width / this.originalImage.width * 0.8;
+                } else {
+                    this.scale = this.canvas.height / this.originalImage.height * 0.8;
+                }
+                
+                this.offsetX = 0;
+                this.offsetY = 0;
+                this.updateCanvas();
+            }
+
+            resetView() {
+                this.scale = 1;
+                this.offsetX = 0;
+                this.offsetY = 0;
+                if (this.originalImage) {
+                    this.fitToCanvas();
+                }
+            }
+
+            startDrag(e) {
+                this.isDragging = true;
+                this.lastMouseX = e.offsetX;
+                this.lastMouseY = e.offsetY;
+                this.canvas.style.cursor = 'grabbing';
+            }
+
+            drag(e) {
+                if (!this.isDragging) return;
+                
+                const deltaX = e.offsetX - this.lastMouseX;
+                const deltaY = e.offsetY - this.lastMouseY;
+                
+                this.offsetX += deltaX;
+                this.offsetY += deltaY;
+                
+                this.lastMouseX = e.offsetX;
+                this.lastMouseY = e.offsetY;
+                
+                this.updateCanvas();
+            }
+
+            endDrag() {
+                this.isDragging = false;
+                this.canvas.style.cursor = 'grab';
+            }
+
+            handleWheel(e) {
+                e.preventDefault();
+                const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+                this.zoom(zoomFactor);
+            }
+
+            downloadImage() {
+                if (!this.originalImage) return;
+
+                const width = parseInt(document.getElementById('widthInput').value) || 800;
+                const height = parseInt(document.getElementById('heightInput').value) || 600;
+                const blur = parseInt(document.getElementById('blurSlider').value) || 15;
+
+                // Create high-resolution canvas for export
+                const exportCanvas = document.createElement('canvas');
+                const exportCtx = exportCanvas.getContext('2d');
+                exportCanvas.width = width;
+                exportCanvas.height = height;
+
+                // Draw blurred background
+                exportCtx.save();
+                exportCtx.filter = `blur(${blur}px)`;
+                
+                const bgScale = Math.max(width / this.originalImage.width, height / this.originalImage.height);
+                const bgWidth = this.originalImage.width * bgScale;
+                const bgHeight = this.originalImage.height * bgScale;
+                const bgX = (width - bgWidth) / 2;
+                const bgY = (height - bgHeight) / 2;
+                
+                exportCtx.drawImage(this.originalImage, bgX, bgY, bgWidth, bgHeight);
+                exportCtx.restore();
+
+                // Draw main image
+                const imgWidth = this.originalImage.width * this.scale;
+                const imgHeight = this.originalImage.height * this.scale;
+                const imgX = (width - imgWidth) / 2 + this.offsetX;
+                const imgY = (height - imgHeight) / 2 + this.offsetY;
+
+                exportCtx.drawImage(this.originalImage, imgX, imgY, imgWidth, imgHeight);
+
+                // Download
+                exportCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'blurred-frame-image.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            }
+        }
+
+        // Initialize the application
+        new BlurredFrameGenerator();
+    </script>
+</body>
+</html>
